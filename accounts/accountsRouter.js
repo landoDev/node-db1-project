@@ -46,4 +46,24 @@ router.post('/', (req, res) =>{
       });
 })
 
+router.patch('/:id', (req, res) =>{
+    const acctUpdate = req.body;
+    const { id } = req.params;
+    // update accounts where id = thisId
+    db('accounts').where({ id }) // forgot this at first lol 
+    .update(acctUpdate)
+    .then(count =>{
+        // Updates return a count
+        if(count > 0){
+            res.status(200).json({ message: 'Account successfully updated'});
+        } else  {
+            res.status(404).json({ message: 'Account not found'})
+        }
+    })
+    .catch(err => {
+        console.log(err);
+        res.status(500).json({ error: 'Could not add account' });
+      });
+})
+
 module.exports = router;
