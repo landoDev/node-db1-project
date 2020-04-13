@@ -15,7 +15,7 @@ router.get('/', (req, res) =>{
       });
 });
 
-router.get('/:id', (req, res) =>{
+router.get('/:id', validateId, (req, res) =>{
     db('accounts').where('id', req.params.id)
     .first()
     .then(account =>{
@@ -46,7 +46,7 @@ router.post('/', (req, res) =>{
       });
 })
 
-router.patch('/:id', (req, res) =>{
+router.patch('/:id', validateId, (req, res) =>{
     const acctUpdate = req.body;
     const { id } = req.params;
     // update accounts where id = thisId
@@ -62,8 +62,34 @@ router.patch('/:id', (req, res) =>{
     })
     .catch(err => {
         console.log(err);
-        res.status(500).json({ error: 'Could not add account' });
+        res.status(500).json({ error: 'Could not update account' });
+      });
+})
+
+router.delete('/:id', validateId, (req, res) =>{
+    const targetAcct = req.params.id;
+    db('accounts').where('id', targetAcct)
+    .delete()
+    .then(deleted => {
+        res.status(200).json({ message: 'Account successfully deleted' })
+    })
+    .catch(err => {
+        console.log(err);
+        res.status(500).json({ error: 'Could not delete account' });
       });
 })
 
 module.exports = router;
+
+function validateId(req, res, next){
+    db('accounts').where('id', req.params.id )
+    .first()
+    .then(account =>{
+        if(account){
+            next();
+        } else {
+            res.status(404).json({ message: 'Account not found'} )
+        }
+    })
+    
+}
