@@ -13,6 +13,18 @@ router.get('/', (req, res) =>{
         console.log(err);
         res.status(500).json({ error: 'Could not pull accounts' });
       });
+});
+
+router.get('/:id', (req, res) =>{
+    db('accounts').where('id', req.params.id)
+    .first()
+    .then(account =>{
+        res.status(200).json({ data: account })
+    })
+    .catch(err => {
+        console.log(err);
+        res.status(500).json({ error: 'Could not pull accounts' });
+      });
 })
 
 module.exports = router;
