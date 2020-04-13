@@ -23,7 +23,26 @@ router.get('/:id', (req, res) =>{
     })
     .catch(err => {
         console.log(err);
-        res.status(500).json({ error: 'Could not pull accounts' });
+        res.status(500).json({ error: 'Could not pull account' });
+      });
+})
+
+router.post('/', (req, res) =>{
+    const newAccount = req.body;
+    db('accounts').insert(newAccount)
+    .then(ids =>{
+        // How is this parsed dynamically?
+        const id = ids[0];
+        db('accounts').where({ id })
+        .first()
+        .then(account =>{
+            console.log(res)
+            res.status(201).json(account)
+        });
+    })
+    .catch(err => {
+        console.log(err);
+        res.status(500).json({ error: 'Could not add account' });
       });
 })
 
